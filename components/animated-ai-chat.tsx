@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import * as React from "react"
 import { Instagram, Youtube, Twitter } from "lucide-react";
 import { SiTiktok } from "react-icons/si";
+import { useRouter } from "next/navigation"
+
 
 
 interface UseAutoResizeTextareaProps {
@@ -97,7 +99,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 
         {props.onChange && (
           <div
-            className="absolute bottom-2 right-2 opacity-0 w-2 h-2 bg-violet-500 rounded-full"
+            className="absolute bottom-2 right-2 opacity-0 w-2 h-2 bg-violet-500 rounded-full pointer-events-none z-0"
             style={{
               animation: "none",
             }}
@@ -125,7 +127,15 @@ export function AnimatedAIChat() {
   })
   const [inputFocused, setInputFocused] = useState(false)
   const [selected, setSelected] = useState<string[]>([])
+  const platformOptions = [
+  { name: "Instagram", icon: <Instagram className="w-4 h-4" /> },
+  { name: "TikTok", icon: <SiTiktok className="w-4 h-4" /> },
+  { name: "YouTube", icon: <Youtube className="w-4 h-4" /> },
+  { name: "X", icon: <Twitter className="w-4 h-4" /> },
+]
+  const router = useRouter()
   const commandPaletteRef = useRef<HTMLDivElement>(null)
+  
 
   const commandSuggestions: CommandSuggestion[] = [
     {
@@ -265,9 +275,9 @@ export function AnimatedAIChat() {
   return (
     <div className="min-h-screen flex flex-col w-full items-center justify-center bg-transparent text-white p-6 relative overflow-hidden">
       <div className="absolute inset-0 w-full h-full overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-500/10 rounded-full mix-blend-normal filter blur-[128px] animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full mix-blend-normal filter blur-[128px] animate-pulse delay-700" />
-        <div className="absolute top-1/4 right-1/3 w-64 h-64 bg-fuchsia-500/10 rounded-full mix-blend-normal filter blur-[96px] animate-pulse delay-1000" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-500/10 rounded-full pointer-events-none z-0 mix-blend-normal filter blur-[128px] animate-pulse" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full pointer-events-none z-0 mix-blend-normal filter blur-[128px] animate-pulse delay-700" />
+        <div className="absolute top-1/4 right-1/3 w-64 h-64 bg-fuchsia-500/10 rounded-full pointer-events-none z-0 mix-blend-normal filter blur-[96px] animate-pulse delay-1000" />
       </div>
       <div className="w-full max-w-2xl mx-auto relative">
         <motion.div
@@ -353,7 +363,7 @@ export function AnimatedAIChat() {
                 onKeyDown={handleKeyDown}
                 onFocus={() => setInputFocused(true)}
                 onBlur={() => setInputFocused(false)}
-                placeholder="Ask zap a question..."
+                placeholder="Ask a question..."
                 containerClassName="w-full"
                 className={cn(
                   "w-full px-4 py-3",
@@ -416,26 +426,6 @@ export function AnimatedAIChat() {
                   />
                 </motion.button>
               </div>
-
-              <motion.button
-                type="button"
-                onClick={handleSendMessage}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.98 }}
-                disabled={isTyping || !value.trim()}
-                className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-all",
-                  "flex items-center gap-2",
-                  value.trim() ? "bg-white text-[#0A0A0B] shadow-lg shadow-white/10" : "bg-white/[0.05] text-white/40",
-                )}
-              >
-                {isTyping ? (
-                  <LoaderIcon className="w-4 h-4 animate-[spin_2s_linear_infinite]" />
-                ) : (
-                  <SendIcon className="w-4 h-4" />
-                )}
-                <span>Generate</span>
-              </motion.button>
             </div>
           </motion.div>
         </motion.div>
@@ -444,13 +434,13 @@ export function AnimatedAIChat() {
       <AnimatePresence>
         {isTyping && (
           <motion.div
-            className="fixed bottom-8 left-1/2 mx-auto transform -translate-x-1/2 backdrop-blur-2xl bg-white/[0.02] rounded-full px-4 py-2 shadow-lg border border-white/[0.05]"
+            className="fixed bottom-8 left-1/2 mx-auto transform -translate-x-1/2 backdrop-blur-2xl bg-white/[0.02] rounded-full pointer-events-none z-0 px-4 py-2 shadow-lg border border-white/[0.05]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-7 rounded-full bg-white/[0.05] flex items-center justify-center text-center">
+              <div className="w-8 h-7 rounded-full pointer-events-none z-0 bg-white/[0.05] flex items-center justify-center text-center">
                 <span className="text-xs font-medium text-white/90 mb-0.5">zap</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-white/70">
@@ -462,35 +452,47 @@ export function AnimatedAIChat() {
         )}
       </AnimatePresence>
 
-      <div className="mt-6 text-center">
-      <h2 className="text-sm text-white/60 mb-3">Choose the target audience</h2>
+      <div className="relative z-50 mt-8 text-center">
+      <h2 className="text-xl font-semibold text-white mb-4">
+        Choose the target audience
+      </h2>
+
       <div className="flex flex-wrap justify-center gap-3">
-        {[
-          { name: "Instagram", icon: <Instagram className="w-4 h-4" /> },
-          { name: "TikTok", icon: <SiTiktok className="w-4 h-4" /> },
-          { name: "YouTube", icon: <Youtube className="w-4 h-4" /> },
-          { name: "X", icon: <Twitter className="w-4 h-4" /> },
-        ].map((platform) => (
-          <button
-            key={platform.name}
-            onClick={() =>
-              setSelected((prev) =>
-                prev.includes(platform.name)
-                  ? prev.filter((p) => p !== platform.name)
-                  : [...prev, platform.name]
-              )
-            }
-            className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm transition-colors ${
-              selected.includes(platform.name)
-                ? "bg-white text-black"
-                : "bg-white/10 text-white/70 hover:bg-white/20"
-            }`}
-          >
-            {platform.icon}
-            {platform.name}
-          </button>
-        ))}
+        {platformOptions.map((platform) => {
+          const isSelected = selected.includes(platform.name)
+          return (
+            <button
+              key={platform.name}
+              onClick={() =>
+                setSelected((prev) =>
+                  prev.includes(platform.name)
+                    ? prev.filter((p) => p !== platform.name)
+                    : [...prev, platform.name]
+                )
+              }
+              className={`inline-flex items-center justify-between gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors border z-50 relative
+                ${
+                  isSelected
+                    ? "bg-orange-600 text-white border-orange-600"
+                    : "bg-[#1a1a1a] text-white/70 border-[#333] hover:bg-[#2a2a2a]"
+                }`}
+            >
+              <span className="flex items-center gap-2">
+                {platform.icon}
+                {platform.name}
+              </span>
+              {isSelected && <Check className="w-4 h-4" />}
+            </button>
+          )
+        })}
       </div>
+
+      <button
+        onClick={() => router.push("/result")}
+        className="mt-6 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-md z-50 relative"
+      >
+        Generate
+      </button>
     </div>
 
 

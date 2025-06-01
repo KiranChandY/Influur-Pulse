@@ -4,17 +4,24 @@ import { useEffect, useRef } from "react"
 
 export default function ResultPage() {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const lastScrollTop = useRef(0)
 
   useEffect(() => {
     const handleScroll = () => {
       const video = videoRef.current
       if (!video) return
 
-      const maxScroll = 1000 // pixels
-      const scrollTop = window.scrollY
-      const scrollFraction = Math.min(scrollTop / maxScroll, 1)
-      const duration = video.duration || 5
-      video.currentTime = scrollFraction * duration
+      const currentScroll = window.scrollY
+
+      if (currentScroll > lastScrollTop.current) {
+        // scrolling down
+        video.play().catch(() => {})
+      } else if (currentScroll < lastScrollTop.current) {
+        // scrolling up
+        video.pause()
+      }
+
+      lastScrollTop.current = currentScroll
     }
 
     window.addEventListener("scroll", handleScroll)
@@ -30,6 +37,7 @@ export default function ResultPage() {
         className="fixed top-0 left-0 w-full h-screen object-cover z-10"
         muted
         playsInline
+        preload="auto"
       />
 
       {/* Name + Description */}

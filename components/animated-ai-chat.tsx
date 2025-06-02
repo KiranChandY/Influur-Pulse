@@ -3,14 +3,12 @@
 import { useEffect, useRef, useCallback, useTransition } from "react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
-import { Paperclip, Command, SendIcon, XIcon, LoaderIcon, Sparkles, ImageIcon, Figma, MonitorIcon } from "lucide-react"
+import { Paperclip, Sparkles, ImageIcon, Figma, MonitorIcon, Check, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import * as React from "react"
-import { Instagram, Youtube, Twitter } from "lucide-react";
-import { SiTiktok } from "react-icons/si";
+import { Instagram, Youtube } from "lucide-react"
+import { SiTiktok } from "react-icons/si"
 import { useRouter } from "next/navigation"
-
-
 
 interface UseAutoResizeTextareaProps {
   minHeight: number
@@ -112,6 +110,13 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 )
 Textarea.displayName = "Textarea"
 
+// Custom X (Twitter) Icon Component
+const XIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+)
+
 export function AnimatedAIChat() {
   const [value, setValue] = useState("")
   const [attachments, setAttachments] = useState<string[]>([])
@@ -128,14 +133,14 @@ export function AnimatedAIChat() {
   const [inputFocused, setInputFocused] = useState(false)
   const [selected, setSelected] = useState<string[]>([])
   const platformOptions = [
-  { name: "Instagram", icon: <Instagram className="w-4 h-4" /> },
-  { name: "TikTok", icon: <SiTiktok className="w-4 h-4" /> },
-  { name: "YouTube", icon: <Youtube className="w-4 h-4" /> },
-  { name: "X", icon: <Twitter className="w-4 h-4" /> },
-]
+    { name: "Instagram", icon: <Instagram className="w-4 h-4" /> },
+    { name: "TikTok", icon: <SiTiktok className="w-4 h-4" /> },
+    { name: "YouTube", icon: <Youtube className="w-4 h-4" /> },
+    { name: "X", icon: <XIcon className="w-4 h-4" /> },
+  ]
   const router = useRouter()
   const commandPaletteRef = useRef<HTMLDivElement>(null)
-  
+  const [isGenerating, setIsGenerating] = useState(false)
 
   const commandSuggestions: CommandSuggestion[] = [
     {
@@ -272,6 +277,14 @@ export function AnimatedAIChat() {
     setTimeout(() => setRecentCommand(null), 2000)
   }
 
+  const handleGenerate = async () => {
+    setIsGenerating(true)
+    // Wait for 2 seconds with loading effect
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    setIsGenerating(false)
+    router.push("/result")
+  }
+
   return (
     <div className="min-h-screen flex flex-col w-full items-center justify-center bg-transparent text-white p-6 relative overflow-hidden">
       <div className="absolute inset-0 w-full h-full overflow-hidden">
@@ -319,6 +332,22 @@ export function AnimatedAIChat() {
             animate={{ scale: 1 }}
             transition={{ delay: 0.1 }}
           >
+            {/* Attachment button positioned at top right */}
+            <div className="absolute top-3 right-3 z-10">
+              <motion.button
+                type="button"
+                onClick={handleAttachFile}
+                whileTap={{ scale: 0.94 }}
+                className="p-2 text-white/40 hover:text-white/90 rounded-lg transition-colors relative group bg-white/[0.03]"
+              >
+                <Paperclip className="w-4 h-4" />
+                <motion.span
+                  className="absolute inset-0 bg-white/[0.05] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                  layoutId="button-highlight"
+                />
+              </motion.button>
+            </div>
+
             <AnimatePresence>
               {showCommandPalette && (
                 <motion.div
@@ -403,7 +432,7 @@ export function AnimatedAIChat() {
                         onClick={() => removeAttachment(index)}
                         className="text-white/40 hover:text-white transition-colors"
                       >
-                        <XIcon className="w-3 h-3" />
+                        <X className="w-3 h-3" />
                       </button>
                     </motion.div>
                   ))}
@@ -411,23 +440,116 @@ export function AnimatedAIChat() {
               )}
             </AnimatePresence>
 
-            <div className="p-4 border-t border-white/[0.05] flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <motion.button
-                  type="button"
-                  onClick={handleAttachFile}
-                  whileTap={{ scale: 0.94 }}
-                  className="p-2 text-white/40 hover:text-white/90 rounded-lg transition-colors relative group"
-                >
-                  <Paperclip className="w-4 h-4" />
-                  <motion.span
-                    className="absolute inset-0 bg-white/[0.05] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                    layoutId="button-highlight"
-                  />
-                </motion.button>
+            {/* Target audience section */}
+            <div className="p-6 border-t border-white/[0.05] text-center">
+              <h2 className="text-lg font-semibold text-white mb-4">Choose the target audience</h2>
+
+              <div className="flex flex-wrap justify-center gap-3">
+                {platformOptions.map((platform) => {
+                  const isSelected = selected.includes(platform.name)
+                  return (
+                    <motion.button
+                      key={platform.name}
+                      onClick={() =>
+                        setSelected((prev) =>
+                          prev.includes(platform.name)
+                            ? prev.filter((p) => p !== platform.name)
+                            : [...prev, platform.name],
+                        )
+                      }
+                      animate={
+                        isSelected
+                          ? {
+                              scaleX: [1, 1.1, 1],
+                              x: [0, 5, 0],
+                              transition: {
+                                duration: 0.6,
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 15,
+                              },
+                            }
+                          : {
+                              scaleX: 1,
+                              x: 0,
+                              transition: { duration: 0.3 },
+                            }
+                      }
+                      className={`inline-flex items-center justify-between gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border z-10 relative min-w-[120px] origin-left
+    ${
+      isSelected
+        ? "bg-violet-600 text-white border-violet-600 shadow-lg shadow-violet-600/25"
+        : "bg-[#1a1a1a] text-white/70 border-[#333] hover:bg-[#2a2a2a] hover:border-[#444]"
+    }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        {platform.icon}
+                        {platform.name}
+                      </span>
+                      {isSelected && (
+                        <motion.div
+                          initial={{ scale: 0.5, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 10,
+                            mass: 0.8,
+                          }}
+                        >
+                          <Check className="w-4 h-4 ml-1" />
+                        </motion.div>
+                      )}
+                    </motion.button>
+                  )
+                })}
               </div>
             </div>
           </motion.div>
+
+          {/* Generate button moved outside container */}
+          <div className="text-center">
+            <motion.button
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              className={`px-8 py-3 rounded-xl text-white font-semibold z-10 relative overflow-hidden transition-all duration-300 ${
+                isGenerating
+                  ? "bg-gradient-to-r from-pink-500 to-violet-600 cursor-not-allowed"
+                  : "bg-gradient-to-r from-pink-600 to-violet-700 hover:from-pink-700 hover:to-violet-800 hover:scale-105 hover:shadow-lg hover:shadow-pink-500/25"
+              }`}
+              whileTap={!isGenerating ? { scale: 0.98 } : {}}
+            >
+              {isGenerating && (
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                  initial={{ x: "-100%" }}
+                  animate={{ x: "100%" }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: "linear",
+                  }}
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-2">
+                {isGenerating ? (
+                  <>
+                    <motion.div
+                      className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                    />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Generate
+                  </>
+                )}
+              </span>
+            </motion.button>
+          </div>
         </motion.div>
       </div>
 
@@ -451,50 +573,6 @@ export function AnimatedAIChat() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <div className="relative z-50 mt-8 text-center">
-      <h2 className="text-xl font-semibold text-white mb-4">
-        Choose the target audience
-      </h2>
-
-      <div className="flex flex-wrap justify-center gap-3">
-        {platformOptions.map((platform) => {
-          const isSelected = selected.includes(platform.name)
-          return (
-            <button
-              key={platform.name}
-              onClick={() =>
-                setSelected((prev) =>
-                  prev.includes(platform.name)
-                    ? prev.filter((p) => p !== platform.name)
-                    : [...prev, platform.name]
-                )
-              }
-              className={`inline-flex items-center justify-between gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors border z-50 relative
-                ${
-                  isSelected
-                    ? "bg-orange-600 text-white border-orange-600"
-                    : "bg-[#1a1a1a] text-white/70 border-[#333] hover:bg-[#2a2a2a]"
-                }`}
-            >
-              <span className="flex items-center gap-2">
-                {platform.icon}
-                {platform.name}
-              </span>
-              {isSelected && <Check className="w-4 h-4" />}
-            </button>
-          )
-        })}
-      </div>
-
-      <button
-        onClick={() => router.push("/result")}
-        className="mt-6 px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-md z-50 relative"
-      >
-        Generate
-      </button>
-    </div>
-
 
       {inputFocused && (
         <motion.div

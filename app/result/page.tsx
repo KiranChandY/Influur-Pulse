@@ -8,6 +8,7 @@ export default function ResultPage() {
   const lastScrollTop = useRef(0)
   const [videoStopped, setVideoStopped] = useState(false)
   const cardSectionRef = useRef<HTMLDivElement>(null)
+  const [showScrollIndicator, setShowScrollIndicator] = useState(true)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,6 +18,13 @@ export default function ResultPage() {
 
       const currentScroll = window.scrollY
       const cardSectionTop = cardSection.offsetTop - window.innerHeight * 0.2
+
+      // Hide scroll indicator after scrolling a bit
+      if (currentScroll > 100 && showScrollIndicator) {
+        setShowScrollIndicator(false)
+      } else if (currentScroll <= 100 && !showScrollIndicator) {
+        setShowScrollIndicator(true)
+      }
 
       // Check if we've reached the card section
       if (currentScroll >= cardSectionTop) {
@@ -45,7 +53,7 @@ export default function ResultPage() {
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [videoStopped])
+  }, [videoStopped, showScrollIndicator])
 
   return (
     <>
@@ -70,6 +78,16 @@ export default function ResultPage() {
           <h1 className="text-2xl font-bold">Ariana Grande</h1>
           <p className="text-sm text-white/80">Grammy-winning pop icon, captured in slow-motion glamour.</p>
         </div>
+
+        {/* Scroll Down Indicator */}
+        {showScrollIndicator && (
+          <div className="fixed bottom-16 left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center animate-bounce">
+            <span className="text-white text-base font-semibold mb-3">Scroll Down</span>
+            <div className="w-7 h-12 border-2 border-white/60 rounded-full flex justify-center">
+              <div className="w-1.5 h-4 bg-white/80 rounded-full mt-2 animate-pulse"></div>
+            </div>
+          </div>
+        )}
 
         {/* Generated Results */}
         <div className="absolute top-[110vh] left-1/2 w-1/2 z-30 p-6">

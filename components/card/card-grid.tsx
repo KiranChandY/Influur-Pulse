@@ -62,7 +62,7 @@ export default function CardGrid({
 
   return (
     <section className="w-full py-12 md:py-16 lg:py-20 relative">
-      <div className="container mx-auto px-4 md:px-6">
+      <div className="container mx-auto px-4 md:px-6 backdrop-blur-sm bg-gradient-to-b from-transparent via-black/10 to-black/20 rounded-2xl py-8">
         {gridTitle && (
           <h2 className="mb-2 tracking-tighter text-3xl font-bold text-center text-white sm:text-4xl">{gridTitle}</h2>
         )}

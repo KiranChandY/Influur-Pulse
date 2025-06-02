@@ -37,12 +37,7 @@ export function MenuBar() {
 
       <div className="flex items-center justify-between w-full px-2">
         {/* Left: Logo */}
-        <motion.div
-          className="relative group"
-          whileHover="hover"
-          initial="initial"
-          style={{ perspective: "600px" }}
-        >
+        <motion.div className="relative group" whileHover="hover" initial="initial" style={{ perspective: "600px" }}>
           <motion.div
             className="absolute inset-0 z-0 pointer-events-none"
             variants={glowVariants}
@@ -59,7 +54,7 @@ export function MenuBar() {
         </motion.div>
 
         {/* Right: Icons */}
-        <ul className="flex items-center gap-1.5 pr-2">
+        <ul className="flex items-center gap-3 pr-2">
           {/* Notifications */}
           <motion.li>
             <motion.div

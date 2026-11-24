@@ -1,30 +1,51 @@
-# Influur Pulse
+# Influur Pulse · AI Campaign Generator + Analytics (concept)
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+The second iteration of my Influur campaign concept. Pulse keeps the prompt-first AI flow and adds **audience targeting** and a **campaign analytics** view, so a brand can see the expected impact of a generated campaign before launching it.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/kiranchandys-projects/v0-influur-pulse)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/gngMTwmleem)
+> Independent design-engineering concept inspired by Influur. Not an official Influur product. See the first iteration in [Influur](https://github.com/KiranChandY/Influur).
 
-## Overview
+---
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+## ✨ What's new in Pulse
 
-## Deployment
+- **Audience targeting.** The AI input now asks you to choose a target audience before generating.
+- **AI thinking states.** Clear "Thinking" and "Generating…" states make it obvious what the AI is doing.
+- **Campaign analytics.** The result page adds estimated reach, engagement rate and campaign budget next to the generated campaign.
+- **Same motion language.** Smooth, scroll-driven reveals carry over from v1.
 
-Your project is live at:
+## 🛠 Built with
 
-**[https://vercel.com/kiranchandys-projects/v0-influur-pulse](https://vercel.com/kiranchandys-projects/v0-influur-pulse)**
+| Area | Tools |
+|---|---|
+| Framework | Next.js (App Router), React, TypeScript |
+| Styling | Tailwind CSS, shadcn/ui (Radix primitives) |
+| Motion | Framer Motion |
+| Prototyping | v0, deployed on Vercel |
 
-## Build your app
+## 📁 Structure
 
-Continue building your app on:
+```
+app/
+  page.tsx            # prompt, platform and audience selection
+  result/page.tsx     # generated campaign + analytics
+components/
+  animated-ai-chat.tsx  # AI prompt input with thinking states
+  menu-bar.tsx          # top navigation
+  card/                 # result cards and grid
+```
 
-**[https://v0.dev/chat/projects/gngMTwmleem](https://v0.dev/chat/projects/gngMTwmleem)**
+## 🚀 Run locally
 
-## How It Works
+```bash
+pnpm install
+pnpm dev
+# open http://localhost:3000
+```
 
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+## 🧠 Design notes
+
+Iteration 1 answered "what campaign should I run?". Pulse answers "is it worth it?". Adding analytics right next to the creative keeps the decision on one screen instead of sending people to a separate dashboard.
+
+---
+
+Designed and built by **[Kiran Chand Yellamelli](https://github.com/KiranChandY)** · [Portfolio](https://kiranchandy.framer.website) · [LinkedIn](https://www.linkedin.com/in/kiran-chandy/)
